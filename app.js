@@ -8,10 +8,10 @@ app.use(express.static(__dirname));
 
 // Sensitive API Keys kept on the backend
 const APIs = {
-    gemini: "AIzaSyAd1fHYyKLxgwC48vFrsNfPrZIbG9_O_Pw",
-    groq: "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",
-    openrouter: "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",
-    mistral: "D7iOMcYNIJmOQZE5jJfvOrE3Qwv34nOE"
+    gemini: process.env.GEMINI_API,
+    groq: process.env.GROQ_API,
+    openrouter: process.env.OPENROUTER_API,
+    mistral: process.env.MISTRAL_API
 };
 
 // Route to serve the main HTML page
