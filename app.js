@@ -166,52 +166,12 @@ async function callModel(provider, model, text) {
     }
 }
 
-// Proxy route to fetch models for a given provider
-app.get("/api/models/:provider", async (req, res) => {
-    const { provider } = req.params;
-
-    try {
-        if (provider === "gemini") {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${APIs.gemini}`);
-            if (!response.ok) throw new Error(`Gemini models fetch returned status ${response.status}`);
-            const data = await response.json();
-            res.json(data);
-
-        } else if (provider === "groq") {
-            const response = await fetch("https://api.groq.com/openai/v1/models", {
-                headers: { "Authorization": `Bearer ${APIs.groq}` }
-            });
-            if (!response.ok) throw new Error(`Groq models fetch returned status ${response.status}`);
-            const data = await response.json();
-            res.json(data);
-
-        } else if (provider === "openrouter") {
-            const response = await fetch("https://openrouter.ai/api/v1/models", {
-                headers: { "Authorization": `Bearer ${APIs.openrouter}` }
-            });
-            if (!response.ok) throw new Error(`OpenRouter models fetch returned status ${response.status}`);
-            const data = await response.json();
-            res.json(data);
-
-        } else if (provider === "mistral") {
-            const response = await fetch("https://api.mistral.ai/v1/models", {
-                headers: { "Authorization": `Bearer ${APIs.mistral}` }
-            });
-            if (!response.ok) throw new Error(`Mistral models fetch returned status ${response.status}`);
-            const data = await response.json();
-            res.json(data);
-
-        } else {
-            res.status(400).json({ error: "Unsupported provider." });
-        }
-    } catch (error) {
-        console.error(`Error fetching models for ${provider}:`, error);
-        res.status(500).json({ error: error.message });
-    }
-});
-
-app.get("/api/models/reply", async (req, res) => {
-    const { provider, model, text } = req.query;
+// ========================
+// Chat Reply Endpoint (supports both GET and POST)
+// ========================
+app.all("/api/models/reply", async (req, res) => {
+    // Support both GET (query params) and POST (body)
+    const { provider, model, text } = req.method === "GET" ? req.query : req.body;
 
     if (!provider || !text) {
         return res.status(400).json({ error: "Provider and text are required." });
@@ -286,6 +246,50 @@ app.get("/api/models/reply", async (req, res) => {
             error: "All attempted models failed to generate a response.",
             attempts: attempts
         });
+    }
+});
+
+// Proxy route to fetch models for a given provider
+app.get("/api/models/:provider", async (req, res) => {
+    const { provider } = req.params;
+
+    try {
+        if (provider === "gemini") {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${APIs.gemini}`);
+            if (!response.ok) throw new Error(`Gemini models fetch returned status ${response.status}`);
+            const data = await response.json();
+            res.json(data);
+
+        } else if (provider === "groq") {
+            const response = await fetch("https://api.groq.com/openai/v1/models", {
+                headers: { "Authorization": `Bearer ${APIs.groq}` }
+            });
+            if (!response.ok) throw new Error(`Groq models fetch returned status ${response.status}`);
+            const data = await response.json();
+            res.json(data);
+
+        } else if (provider === "openrouter") {
+            const response = await fetch("https://openrouter.ai/api/v1/models", {
+                headers: { "Authorization": `Bearer ${APIs.openrouter}` }
+            });
+            if (!response.ok) throw new Error(`OpenRouter models fetch returned status ${response.status}`);
+            const data = await response.json();
+            res.json(data);
+
+        } else if (provider === "mistral") {
+            const response = await fetch("https://api.mistral.ai/v1/models", {
+                headers: { "Authorization": `Bearer ${APIs.mistral}` }
+            });
+            if (!response.ok) throw new Error(`Mistral models fetch returned status ${response.status}`);
+            const data = await response.json();
+            res.json(data);
+
+        } else {
+            res.status(400).json({ error: "Unsupported provider." });
+        }
+    } catch (error) {
+        console.error(`Error fetching models for ${provider}:`, error);
+        res.status(500).json({ error: error.message });
     }
 });
 
