@@ -485,7 +485,7 @@ app.get("/api/scrap/games/list", async (req, res) => {
 
     try {
         const response = await getGamesList(query);
-        
+        res.json({ status: "success", games: response });
     } catch (error) {
         console.error(error);
         res.status(500).json({ status: "error", message: error.message });
