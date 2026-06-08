@@ -396,14 +396,21 @@ async function getAutoComplete(query) {
 
 app.get("/api/scrap/games/autocomplete", async (req, res) => {
     const {query} = req.query;
-
+    var data = [];
     if (!query) {
         return res.status(400).json({ error: "Missing required query parameter: query" });
     }
 
     try {
         const response = await getAutoComplete(query);
-        res.json(response);
+        response.suggestions.forEach(suggestion => {
+            data.push({
+                name: suggestion.value,
+                slug: suggestion.data.slug,
+                year: suggestion.data.year
+            });
+        });
+        res.json(data);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
