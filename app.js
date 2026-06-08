@@ -421,7 +421,77 @@ app.get("/api/scrap/games/autocomplete", async (req, res) => {
 });
 
 //===============================================//
+//=================GET GAME PICTURE=================//
+async function getGamesList(query) {
+     const targetUrl = `https://backloggd.com/search/results.turbo_stream?page=1&query=${query.replace(" ", "+")}&type=games`
+    const agent = new https.Agent({
+        ciphers: [
+            'TLS_AES_256_GCM_SHA384',
+            'TLS_CHACHA20_POLY1305_SHA256',
+            'TLS_AES_128_GCM_SHA256',
+            'ECDHE-ECDSA-AES128-GCM-SHA256',
+            'ECDHE-RSA-AES128-GCM-SHA256',
+            'ECDHE-ECDSA-AES256-GCM-SHA384',
+            'ECDHE-RSA-AES256-GCM-SHA384'
+        ].join(':'),
+        honorCipherOrder: true,
+        minVersion: 'TLSv1.2'
+    });
 
+    try {
+        const response = await axios.get(targetUrl, {
+            httpsAgent: agent, 
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                'Connection': 'keep-alive'
+            },
+            timeout: 10000
+        });
+
+        const $ = response.cheerio.load(response.data);
+        const games = [];
+        $('.result').each((index, element) => {
+            const name = $(element).find('h3').text().trim();
+            const img = $(element).find('img').attr('src');
+            const year = $(element).find('h3 .subtitle-text').text().trim();
+            const type = $(element).find('.game-result-type').text().trim();
+            games.push({
+             name:name,
+             img:img,
+             year:year, 
+             type:type
+            });
+        });
+
+        return games;
+
+    } catch (error) {
+        if (error.response) {
+            throw new Error(`Cloudflare blocked or server error: ${error.response.status}`);
+        }
+        throw error;
+    }
+}
+app.get("/api/scrap/games/list", async (req, res) => {
+    const {query} = req.query;
+    var data = [];
+    if (!query) {
+        return res.status(400).json({ error: "Missing required query parameter: query" });
+    }
+
+    try {
+        const response = await getGamesList(query);
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: "error", message: error.message });
+    }
+});
+//===================================================//
 if (require.main === module) {
     app.listen(3000, () => {
         console.log("Server is running on http://localhost:3000");
