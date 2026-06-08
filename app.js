@@ -454,7 +454,7 @@ async function getGamesList(query) {
 
         const $ = cheerio.load(response);
         const games = [];
-        $('.result').each((index, element) => {
+        $('.col-12.result').each((index, element) => {
             const name = $(element).find('h3').text().trim();
             const img = $(element).find('img').attr('src');
             const year = $(element).find('h3 .subtitle-text').text().trim();
