@@ -452,7 +452,7 @@ async function getGamesList(query) {
             timeout: 10000
         });
 
-        const $ = response.cheerio.load(response.data);
+        const $ = cheerio.load(response);
         const games = [];
         $('.result').each((index, element) => {
             const name = $(element).find('h3').text().trim();
