@@ -410,7 +410,10 @@ app.get("/api/scrap/games/autocomplete", async (req, res) => {
                 year: suggestion.data.year
             });
         });
-        res.json(data);
+        const html = data.map(game =>
+             `<div class="autocomplete-item" data-slug="${game.slug}">${game.name} (${game.year})</div>`
+            ).join("");
+        res.json(html);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: error.message });
