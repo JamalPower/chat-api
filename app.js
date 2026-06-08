@@ -413,10 +413,10 @@ app.get("/api/scrap/games/autocomplete", async (req, res) => {
         const html = data.map(game =>
              `<div class="autocomplete-item" data-slug="${game.slug}">${game.name} (${game.year})</div>`
             ).join("");
-        res.json(html);
+        res.json({ status: "success", html });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ status: "error", message: error.message });
     }
 });
 
