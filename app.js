@@ -1,5 +1,10 @@
 const express = require("express");
 const path = require("path");
+const axios = require('axios');
+const cheerio = require('cheerio');
+const crypto = require('crypto');
+const https = require('https');
+
 const app = express();
 
 // Middleware to parse JSON bodies
@@ -284,6 +289,65 @@ app.post("/api/models/reply", async (req, res) => {
     }
 });
 
+// ========================
+// Scraping endpoint 
+// ========================
+
+async function fetchHTMLSOURCE(url) {
+    const agent = new https.Agent({
+        ciphers: [
+            'TLS_AES_256_GCM_SHA384',
+            'TLS_CHACHA20_POLY1305_SHA256',
+            'TLS_AES_128_GCM_SHA256',
+            'ECDHE-ECDSA-AES128-GCM-SHA256',
+            'ECDHE-RSA-AES128-GCM-SHA256',
+            'ECDHE-ECDSA-AES256-GCM-SHA384',
+            'ECDHE-RSA-AES256-GCM-SHA384'
+        ].join(':'),
+        honorCipherOrder: true,
+        minVersion: 'TLSv1.2'
+    });
+
+    try {
+        const response = await axios.get(url, {
+            httpsAgent: agent, 
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache',
+                'Connection': 'keep-alive'
+            },
+            timeout: 10000
+        });
+
+        return response.data;
+
+    } catch (error) {
+        if (error.response) {
+            console.error(`خطأ من السيرفر المستهدف: ${error.response.status}`);
+            throw new Error(`Cloudflare blocked or server error: ${error.response.status}`);
+        }
+        console.error("خطأ أثناء جلب الكود المصدري للموقع:", error.message);
+        throw error;
+    }
+}
+app.get("/api/scrap/fetch", async (req, res) => {
+    const { url } = req.query;
+
+    if (!url) {
+        return res.status(400).json({ error: "Missing required query parameter: url" });
+    }
+
+    try {
+        const response = await fetchHTMLSOURCE(url);
+        res.send(response);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 if (require.main === module) {
     app.listen(3000, () => {
