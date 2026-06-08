@@ -210,8 +210,8 @@ app.get("/api/models/:provider", async (req, res) => {
     }
 });
 
-app.post("/api/models/reply", async (req, res) => {
-    const { provider, model, text } = req.body;
+app.get("/api/models/reply", async (req, res) => {
+    const { provider, model, text } = req.query;
 
     if (!provider || !text) {
         return res.status(400).json({ error: "Provider and text are required." });
