@@ -422,8 +422,8 @@ app.get("/api/scrap/games/autocomplete", async (req, res) => {
 
 //===============================================//
 //=================GET GAME PICTURE=================//
-async function getGamesList(query) {
-     const targetUrl = `https://backloggd.com/search/results.turbo_stream?page=1&query=${query.replace(" ", "+")}&type=games`
+async function fetchGames(query) {
+     const targetUrl = `https://backloggd.com${query}`;
     const agent = new https.Agent({
         ciphers: [
             'TLS_AES_256_GCM_SHA384',
@@ -452,22 +452,7 @@ async function getGamesList(query) {
             timeout: 10000
         });
 
-        const $ = cheerio.load(response);
-        const games = [];
-        $('.col-12.result').each((index, element) => {
-            const name = $(element).find('h3').text().trim();
-            const img = $(element).find('img').attr('src');
-            const year = $(element).find('h3 .subtitle-text').text().trim();
-            const type = $(element).find('.game-result-type').text().trim();
-            games.push({
-             name:name,
-             img:img,
-             year:year, 
-             type:type
-            });
-        });
-
-        return games;
+        return response.data;
 
     } catch (error) {
         if (error.response) {
@@ -483,14 +468,219 @@ app.get("/api/scrap/games/list", async (req, res) => {
         return res.status(400).json({ error: "Missing required query parameter: query" });
     }
 
-    try {
-        const response = await getGamesList(query);
-        res.json({ status: "success", games: response });
+  try {
+        const response = await fetchGames(`/search/results.turbo_stream?page=1&query=${query.replace(/ /g, "+")}&type=games`);
+        const $ = cheerio.load(response);
+        const games = [];
+        $('div.result').each((index, element) => {
+            const el = $(element);
+            const h3Element = el.find('h3');
+            let name = h3Element.clone().children('span').remove().end().text().trim();
+            const year = el.find('h3 span.subtitle-text').text().trim();
+            const img = el.find('img').attr('src');
+            const type = el.find('.game-result-type').text().trim() || "Main Game";
+            const url = el.find('a').attr('href');
+            if (name) {
+                games.push({
+                    name: name,
+                    img: img,
+                    year: year ? year : null,
+                    type: type,
+                    url: url ? url : '/games/' + name.toLowerCase.replace(' ', '-')
+                });
+            }
+        });
+        res.json({ 
+            status: "success", 
+            count: games.length, 
+            data: games
+        });
+
     } catch (error) {
-        console.error(error);
+        console.error("Parsing Error:", error);
         res.status(500).json({ status: "error", message: error.message });
     }
 });
+
+app.get("/api/scrap/games/details", async (req, res) => {
+    const {url} = req.query;
+    if (!url) {
+        return res.status(400).json({ error: "Missing required query parameter: url" });
+    }
+
+    try {
+        const response = await fetchGames(url);
+        const $ = cheerio.load(response);
+        const title = $('h1').first().text().trim();
+        const gameImage = $('img[alt*="cover"], div.game-cover img, .game-image img').first().attr('src') || null;
+        const coverImage = 'https:' + $('#game-cover-art img').first().attr('src') || null;
+        const description = $('#center-content').text().trim() || null;
+        
+        // Extract developers and publishers - use /company/ in href
+        const developers = [];
+        const publishers = [];
+        $('a[href*="/company/"]').each((i, el) => {
+            const text = $(el).text().trim();
+            if (text && text.length > 0) {
+                // First 2 companies are typically developer and publisher
+                if (developers.length === 0) {
+                    developers.push(text);
+                } else if (publishers.length === 0) {
+                    publishers.push(text);
+                }
+            }
+        });
+
+        // Extract release date - look for links with year patterns and date format
+        let releaseDate = null;
+        $('a[href*="release_year:"]').each((i, el) => {
+            const text = $(el).text().trim();
+            if (text && text.match(/\w+\s+\d+,\s+\d{4}/)) {
+                releaseDate = text;
+                return false;
+            }
+        });
+
+        // Extract genres - use genre: in href
+        const genres = [];
+        $('a[href*="genre:"]').each((i, el) => {
+            const text = $(el).text().trim();
+            if (text && !genres.includes(text)) {
+                genres.push(text);
+            }
+        });
+
+        // Extract platforms - use release_platform: in href
+        const platforms = [];
+        $('a[href*="release_platform:"]').each((i, el) => {
+            const text = $(el).text().trim();
+            if (text && !platforms.includes(text)) {
+                platforms.push(text);
+            }
+        });
+
+        // Extract rating - find numeric pattern like "4.6"
+        let rating = null;
+        $('*').each((i, el) => {
+            const text = $(el).text().trim();
+            if (/^\d+\.\d+$/.test(text) && parseFloat(text) >= 0 && parseFloat(text) <= 5) {
+                rating = parseFloat(text);
+                return false; // break on first match
+            }
+        });
+
+        // Extract statistics from links with stats text
+        const stats = {};
+        $('a').each((i, el) => {
+            const text = $(el).text();
+            
+            // Extract plays - Plays followed by numbers
+            const playsMatch = text.match(/Plays[\s\n]+(\d+[KkMm]?)/i);
+            if (playsMatch) stats.plays = playsMatch[1];
+            
+            // Extract playing
+            const playingMatch = text.match(/Playing[\s\n]+(\d+[KkMm]?)/i);
+            if (playingMatch) stats.playing = playingMatch[1];
+            
+            // Extract backlogs
+            const backlogsMatch = text.match(/Backlogs[\s\n]+(\d+[KkMm]?)/i);
+            if (backlogsMatch) stats.backlogs = backlogsMatch[1];
+            
+            // Extract wishlists
+            const wishlistsMatch = text.match(/Wishlists[\s\n]+(\d+[KkMm]?)/i);
+            if (wishlistsMatch) stats.wishlists = wishlistsMatch[1];
+            
+            // Extract ratings count
+            const ratingsMatch = text.match(/Ratings[\s\n]+(\d+[KkMm]?)/i);
+            if (ratingsMatch) stats.ratings = ratingsMatch[1];
+        });
+
+        // Extract play times - look for patterns with "h" suffix
+        const playTimes = {};
+        $('div, span, p').each((i, el) => {
+            const text = $(el).text().trim();
+            if (text.match(/^\d+h/)) {
+                if (text.includes('average') || !playTimes.average) {
+                    const match = text.match(/^(\d+)h/);
+                    if (match && !playTimes.average) playTimes.average = match[1] + 'h';
+                }
+                if (text.includes('finish') && !playTimes.toFinish) {
+                    const match = text.match(/^(\d+)h/);
+                    if (match) playTimes.toFinish = match[1] + 'h';
+                }
+                if (text.includes('master') && !playTimes.toMaster) {
+                    const match = text.match(/^(\d+)h/);
+                    if (match) playTimes.toMaster = match[1] + 'h';
+                }
+            }
+        });
+
+        const gameDetails = {
+            title,
+            gameImage,
+            coverImage,
+            description,
+            developers,
+            publishers,
+            releaseDate,
+            genres,
+            platforms,
+            rating,
+            stats,
+            playTimes
+        };
+
+        res.json({ 
+            status: "success", 
+            data: gameDetails
+        });
+
+    } catch (error) {
+        console.error("Parsing Error:", error);
+        res.status(500).json({ status: "error", message: error.message });
+    }
+});
+
+// Debug endpoint to inspect HTML structure
+app.get("/api/scrap/games/debug", async (req, res) => {
+    const {url} = req.query;
+    if (!url) {
+        return res.status(400).json({ error: "Missing required query parameter: url" });
+    }
+
+    try {
+        const response = await fetchGames(url);
+        const $ = cheerio.load(response);
+        
+        const debug = {
+            // All links with their href
+            all_links: $('a').map((i, el) => ({
+                text: $(el).text().trim(),
+                href: $(el).attr('href')
+            })).get().slice(0, 50),
+            
+            // Text containing key terms
+            text_released: $('*').filter((i, el) => $(el).text().includes('Released')).map((i, el) => $(el).text().trim().substring(0, 80)).get().slice(0, 5),
+            text_containing_genres: $('*').filter((i, el) => $(el).text().includes('Adventure') || $(el).text().includes('RPG') || $(el).text().includes('Shooter')).map((i, el) => $(el).text().trim().substring(0, 80)).get().slice(0, 5),
+            
+            // All text on page sample
+            page_text_sample: $.text().trim().substring(0, 1000),
+            
+            // Elements containing company names
+            rockstar: $('*').filter((i, el) => $(el).text().includes('Rockstar')).map((i, el) => ({
+                tag: el.name,
+                text: $(el).text().trim().substring(0, 100),
+                html: $(el).html().substring(0, 150)
+            })).get().slice(0, 5)
+        };
+        
+        res.json({ status: "debug", data: debug });
+    } catch (error) {
+        console.error("Debug Error:", error);
+        res.status(500).json({ status: "error", message: error.message });
+    }
+});
+
 //===================================================//
 if (require.main === module) {
     app.listen(3000, () => {
