@@ -641,46 +641,6 @@ app.get("/api/scrap/games/details", async (req, res) => {
     }
 });
 
-// Debug endpoint to inspect HTML structure
-app.get("/api/scrap/games/debug", async (req, res) => {
-    const {url} = req.query;
-    if (!url) {
-        return res.status(400).json({ error: "Missing required query parameter: url" });
-    }
-
-    try {
-        const response = await fetchGames(url);
-        const $ = cheerio.load(response);
-        
-        const debug = {
-            // All links with their href
-            all_links: $('a').map((i, el) => ({
-                text: $(el).text().trim(),
-                href: $(el).attr('href')
-            })).get().slice(0, 50),
-            
-            // Text containing key terms
-            text_released: $('*').filter((i, el) => $(el).text().includes('Released')).map((i, el) => $(el).text().trim().substring(0, 80)).get().slice(0, 5),
-            text_containing_genres: $('*').filter((i, el) => $(el).text().includes('Adventure') || $(el).text().includes('RPG') || $(el).text().includes('Shooter')).map((i, el) => $(el).text().trim().substring(0, 80)).get().slice(0, 5),
-            
-            // All text on page sample
-            page_text_sample: $.text().trim().substring(0, 1000),
-            
-            // Elements containing company names
-            rockstar: $('*').filter((i, el) => $(el).text().includes('Rockstar')).map((i, el) => ({
-                tag: el.name,
-                text: $(el).text().trim().substring(0, 100),
-                html: $(el).html().substring(0, 150)
-            })).get().slice(0, 5)
-        };
-        
-        res.json({ status: "debug", data: debug });
-    } catch (error) {
-        console.error("Debug Error:", error);
-        res.status(500).json({ status: "error", message: error.message });
-    }
-});
-
 //===================================================//
 if (require.main === module) {
     app.listen(3000, () => {
