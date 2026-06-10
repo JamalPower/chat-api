@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat Center | Multi-Model Interface</title>
+    <title>AI APIs Center | Multi-Purpose Interface</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -98,6 +98,46 @@
             gap: 24px;
             flex: 1;
             overflow-y: auto;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .nav-tab-btn {
+            padding: 12px 16px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .nav-tab-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .nav-tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .nav-tab-btn i {
+            font-size: 1rem;
         }
 
         .control-group {
@@ -515,6 +555,615 @@
             background: var(--primary-light);
         }
 
+        /* Game Search Interface */
+        .games-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .game-search-wrapper {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .game-search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .game-search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .search-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Autocomplete dropdown */
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .autocomplete-dropdown.show {
+            display: block;
+        }
+
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .autocomplete-item:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Game Results Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+
+        .game-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .game-card-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-card-content {
+            padding: 14px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .game-card-title {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.9rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .game-card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .game-card-type {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        /* Game Details View */
+        .game-details {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .game-details-header {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .game-details-image {
+            flex-shrink: 0;
+        }
+
+        .game-details-image img {
+            width: 200px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .game-details-info {
+            flex: 1;
+        }
+
+        .game-details-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .game-details-year {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .game-details-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .game-details-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rating-stars {
+            font-size: 1.2rem;
+            color: #fbbf24;
+        }
+
+        .rating-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .game-details-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .tag {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .game-details-description {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .game-details-description h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .game-details-description p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-bottom: 24px;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Web Scraper Interface */
+        .scraper-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .scraper-input-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .scraper-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            background: white;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .scraper-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .scraper-btn {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .scraper-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .scraper-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .scraper-output {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+            box-shadow: var(--shadow-md);
+            display: none;
+        }
+
+        .scraper-output.show {
+            display: block;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* API Documentation Styles */
+        .api-docs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .api-section {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .api-section-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, #f3f0ff 100%);
+            border-bottom: 2px solid var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .api-section-header:hover {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.15) 0%, rgba(79, 70, 229, 0.05) 100%);
+        }
+
+        .api-section-header.expanded {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #f3f0ff 100%);
+        }
+
+        .api-section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 1.1rem;
+        }
+
+        .api-section-title i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .api-section-toggle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .api-section.expanded .api-section-toggle {
+            transform: rotate(180deg);
+        }
+
+        .api-section-content {
+            padding: 24px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .api-section.expanded .api-section-content {
+            display: block;
+        }
+
+        .api-endpoint {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--bg-main);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .api-method {
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .api-method.get {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .api-method.post {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .api-path {
+            color: var(--text-main);
+            flex: 1;
+            word-break: break-all;
+        }
+
+        .api-details {
+            margin-top: 16px;
+        }
+
+        .api-detail-group {
+            margin-bottom: 16px;
+        }
+
+        .api-detail-label {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .api-code-block {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin-top: 8px;
+        }
+
+        .api-params-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+
+        .api-params-table th,
+        .api-params-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .api-params-table th {
+            background: var(--bg-main);
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .api-params-table td:first-child {
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .api-copy-btn {
+            padding: 6px 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .api-copy-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .api-note {
+            background: #fef3c7;
+            border-left: 4px solid #fbbf24;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #92400e;
+            margin-top: 12px;
+        }
+
+        .api-note strong {
+            color: #b45309;
+        }
+
         /* Chat Input Area */
         .chat-input-panel {
             padding: 24px;
@@ -730,7 +1379,7 @@
         <div class="sidebar-header">
             <div class="logo">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span>AI Chat Center</span>
+                <span>AI APIs Center</span>
             </div>
             <button class="close-sidebar-btn" id="closeSidebarBtn">
                 <i class="fa-solid fa-xmark"></i>
@@ -738,22 +1387,72 @@
         </div>
 
         <div class="sidebar-content">
-            <div class="control-group">
-                <label for="providerSelect">AI Engine</label>
-                <select id="providerSelect">
-                    <option value="gemini">Google Gemini</option>
-                    <option value="groq">Groq AI</option>
-                    <option value="openrouter">OpenRouter</option>
-                    <option value="mistral">Mistral AI</option>
-                </select>
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="nav-tab-btn active" data-tab="chat" onclick="switchTab('chat', this)">
+                    <i class="fa-solid fa-comments"></i>
+                    AI Chat
+                </button>
+                <button class="nav-tab-btn" data-tab="games" onclick="switchTab('games', this)">
+                    <i class="fa-solid fa-gamepad"></i>
+                    Game Search
+                </button>
+                <button class="nav-tab-btn" data-tab="scraper" onclick="switchTab('scraper', this)">
+                    <i class="fa-solid fa-globe"></i>
+                    Web Scraper
+                </button>
+                <button class="nav-tab-btn" data-tab="docs" onclick="switchTab('docs', this)">
+                    <i class="fa-solid fa-book"></i>
+                    API Docs
+                </button>
             </div>
 
-            <div class="control-group" style="flex: 1; display: flex; flex-direction: column;">
-                <span class="models-list-title">Related Models</span>
-                <div class="models-list-container">
-                    <ul class="models-list" id="modelsList">
-                        <!-- Populated dynamically -->
-                    </ul>
+            <!-- Chat Section -->
+            <div class="tab-content" id="chat-section" style="display: flex; flex-direction: column; gap: 24px; flex: 1;">
+                <div class="control-group">
+                    <label for="providerSelect">AI Engine</label>
+                    <select id="providerSelect">
+                        <option value="gemini">Google Gemini</option>
+                        <option value="groq">Groq AI</option>
+                        <option value="openrouter">OpenRouter</option>
+                        <option value="mistral">Mistral AI</option>
+                    </select>
+                </div>
+
+                <div class="control-group" style="flex: 1; display: flex; flex-direction: column;">
+                    <span class="models-list-title">Related Models</span>
+                    <div class="models-list-container">
+                        <ul class="models-list" id="modelsList">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Section -->
+            <div class="tab-content" id="games-section" style="display: none; flex-direction: column; gap: 16px; flex: 1;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Search Games</label>
+                    <div style="position: relative;">
+                        <input type="text" id="gameSearchInput" class="game-search-input" placeholder="Search games..." style="width: 100%;">
+                        <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scraper Section -->
+            <div class="tab-content" id="scraper-section" style="display: none; flex-direction: column; gap: 16px; flex: 1;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Website URL</label>
+                    <input type="text" id="scraperInput" class="scraper-input" placeholder="https://example.com" style="width: 100%;">
+                </div>
+            </div>
+
+            <!-- Docs Section -->
+            <div class="tab-content" id="docs-section" style="display: none; flex-direction: column; gap: 16px; flex: 1; overflow-y: auto;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <h3 style="font-size: 0.9rem; font-weight: 700; color: var(--text-main);">API Endpoints</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">Click endpoints below to view details, parameters, and examples</p>
                 </div>
             </div>
         </div>
@@ -761,7 +1460,7 @@
         <div class="sidebar-footer">
             <button class="clear-btn" id="clearChatBtn">
                 <i class="fa-regular fa-trash-can"></i>
-                Clear Conversation
+                Clear
             </button>
         </div>
     </div>
@@ -773,47 +1472,555 @@
             <button class="menu-btn" id="menuBtn">
                 <i class="fa-solid fa-bars-staggered"></i>
             </button>
-            <div class="mobile-title" id="mobileTitle">Gemini 1.5 Flash</div>
+            <div class="mobile-title" id="mobileTitle">AI Chat Center</div>
         </div>
 
-        <!-- Scrollable Messages Area -->
-        <div class="chat-messages" id="chatMessages">
-            <!-- Empty state greeting -->
-            <div class="empty-state" id="emptyState">
-                <div class="empty-icon">
-                    <i class="fa-solid fa-comments"></i>
+        <!-- Chat Tab Content -->
+        <div id="chat-content" style="display: flex; flex-direction: column; flex: 1;">
+            <!-- Scrollable Messages Area -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Empty state greeting -->
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <h2>Multi-Model Chat Center</h2>
+                    <p>Select any AI engine and version on the sidebar, then type a message below to start chatting.</p>
+                    
+                    <div class="suggestions-grid">
+                        <div class="suggestion-card" onclick="fillPrompt('Explain dark matter and dark energy in simple terms.')">
+                            <strong>Explain Science</strong>
+                            <span>Explain dark matter in simple terms</span>
+                        </div>
+                        <div class="suggestion-card" onclick="fillPrompt('Write a clean JavaScript function that checks if a string is a palindrome.')">
+                            <strong>Write Code</strong>
+                            <span>JavaScript Palindrome check function</span>
+                        </div>
+                        <div class="suggestion-card" onclick="fillPrompt('Draft a polite email to request a deadline extension for a project.')">
+                            <strong>Email Draft</strong>
+                            <span>Polite email asking for project extension</span>
+                        </div>
+                        <div class="suggestion-card" onclick="fillPrompt('Give me 5 creative ideas for a weekend project using cardboard boxes.')">
+                            <strong>Brainstorming</strong>
+                            <span>Creative projects using cardboard boxes</span>
+                        </div>
+                    </div>
                 </div>
-                <h2>Multi-Model Chat Center</h2>
-                <p>Select any AI engine and version on the sidebar, then type a message below to start chatting.</p>
-                
-                <div class="suggestions-grid">
-                    <div class="suggestion-card" onclick="fillPrompt('Explain dark matter and dark energy in simple terms.')">
-                        <strong>Explain Science</strong>
-                        <span>Explain dark matter in simple terms</span>
+            </div>
+
+            <!-- Bottom Text Entry Bar -->
+            <div class="chat-input-panel">
+                <div class="chat-input-wrapper">
+                    <textarea id="chatInput" placeholder="Send a message..." rows="1"></textarea>
+                    <button class="send-btn" id="sendBtn" disabled>
+                        <i class="fa-regular fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Tab Content -->
+        <div id="games-content" style="display: none; flex-direction: column; flex: 1; overflow-y: auto;">
+            <div style="padding: 40px 24px;">
+                <div class="games-container">
+                    <div>
+                        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Game Search</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 24px;">Search for games and view detailed information</p>
                     </div>
-                    <div class="suggestion-card" onclick="fillPrompt('Write a clean JavaScript function that checks if a string is a palindrome.')">
-                        <strong>Write Code</strong>
-                        <span>JavaScript Palindrome check function</span>
+
+                    <div class="game-search-wrapper">
+                        <input type="text" id="gameSearchMainInput" class="game-search-input" placeholder="Search games...">
+                        <button class="search-btn" id="gameSearchBtn">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            Search
+                        </button>
                     </div>
-                    <div class="suggestion-card" onclick="fillPrompt('Draft a polite email to request a deadline extension for a project.')">
-                        <strong>Email Draft</strong>
-                        <span>Polite email asking for project extension</span>
+
+                    <div id="gamesResultsContainer">
+                        <!-- Results will be populated here -->
                     </div>
-                    <div class="suggestion-card" onclick="fillPrompt('Give me 5 creative ideas for a weekend project using cardboard boxes.')">
-                        <strong>Brainstorming</strong>
-                        <span>Creative projects using cardboard boxes</span>
+
+                    <div id="gameDetailsContainer" style="display: none;">
+                        <!-- Game details will be populated here -->
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Text Entry Bar -->
-        <div class="chat-input-panel">
-            <div class="chat-input-wrapper">
-                <textarea id="chatInput" placeholder="Send a message..." rows="1"></textarea>
-                <button class="send-btn" id="sendBtn" disabled>
-                    <i class="fa-regular fa-paper-plane"></i>
-                </button>
+        <!-- Scraper Tab Content -->
+        <div id="scraper-content" style="display: none; flex-direction: column; flex: 1; overflow-y: auto;">
+            <div style="padding: 40px 24px;">
+                <div class="scraper-container">
+                    <div>
+                        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Web Scraper</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 24px;">Fetch and view HTML source code from any website</p>
+                    </div>
+
+                    <div class="scraper-input-group">
+                        <input type="text" id="scraperMainInput" class="scraper-input" placeholder="https://example.com">
+                        <button class="scraper-btn" id="scraperFetchBtn">
+                            <i class="fa-solid fa-download"></i>
+                            Fetch
+                        </button>
+                    </div>
+
+                    <div style="display: flex; gap: 8px;">
+                        <button class="search-btn" id="scraperCopyBtn" style="display: none;">
+                            <i class="fa-regular fa-copy"></i>
+                            Copy
+                        </button>
+                    </div>
+
+                    <div id="scraperOutput" class="scraper-output"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation Tab Content -->
+        <div id="docs-content" style="display: none; flex-direction: column; flex: 1; overflow-y: auto;">
+            <div style="padding: 40px 24px;">
+                <div class="api-docs-container">
+                    <div>
+                        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">API Documentation</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 24px;">Complete API reference with examples and parameters for integration into your projects</p>
+                    </div>
+
+                    <!-- Base URL Info -->
+                    <div style="background: #dbeafe; border-left: 4px solid #1e40af; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+                        <div style="font-weight: 600; color: #1e40af; margin-bottom: 8px;">Base URL</div>
+                        <div style="font-family: 'Courier New', monospace; color: #1e40af; font-size: 0.9rem;">https://chat-api-azure.vercel.app</div>
+                    </div>
+
+                    <!-- AI Chat Endpoints -->
+                    <div class="api-section" id="apiChatSection">
+                        <div class="api-section-header" onclick="toggleApiSection('apiChatSection')">
+                            <div class="api-section-title">
+                                <i class="fa-solid fa-comments"></i>
+                                AI Chat API
+                            </div>
+                            <div class="api-section-toggle">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="api-section-content">
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-info-circle"></i> Overview</div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Generate text responses using multiple AI providers. Supports Gemini, Groq, OpenRouter, and Mistral with automatic fallback to available models if primary fails.</p>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-link"></i> Endpoint</div>
+                                <div class="api-endpoint">
+                                    <div class="api-method post">POST</div>
+                                    <div class="api-path">/api/models/reply</div>
+                                </div>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-cube"></i> Request Parameters</div>
+                                <table class="api-params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>provider</td>
+                                            <td>string</td>
+                                            <td>✓</td>
+                                            <td>AI provider: "gemini", "groq", "openrouter", "mistral"</td>
+                                        </tr>
+                                        <tr>
+                                            <td>text</td>
+                                            <td>string</td>
+                                            <td>✓</td>
+                                            <td>Your prompt/message to send to the AI</td>
+                                        </tr>
+                                        <tr>
+                                            <td>model</td>
+                                            <td>string</td>
+                                            <td>✗</td>
+                                            <td>Specific model ID (uses provider default if omitted)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-code"></i> Request Example</div>
+                                <div class="api-code-block">fetch('/api/models/reply', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    provider: 'gemini',
+    model: 'gemini-1.5-flash',
+    text: 'Explain quantum computing'
+  })
+})
+.then(res => res.json())
+.then(data => console.log(data.response))</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('fetch(\'/api/models/reply\', {\n  method: \'POST\',\n  headers: { \'Content-Type\': \'application/json\' },\n  body: JSON.stringify({\n    provider: \'gemini\',\n    model: \'gemini-1.5-flash\',\n    text: \'Explain quantum computing\'\n  })\n})\n.then(res => res.json())\n.then(data => console.log(data.response))')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-arrow-right"></i> Response Example</div>
+                                <div class="api-code-block">{
+  "response": "Quantum computing is a revolutionary...",
+  "provider": "gemini",
+  "model": "models/gemini-1.5-flash",
+  "modelName": "Gemini 1.5 Flash",
+  "fallbackUsed": false,
+  "attempts": []
+}</div>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-circle-info"></i> Available Models by Provider</div>
+                                <table class="api-params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Provider</th>
+                                            <th>Model ID</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>gemini</td>
+                                            <td>models/gemini-1.5-flash</td>
+                                            <td>Fast, versatile multi-turn chat model</td>
+                                        </tr>
+                                        <tr>
+                                            <td>gemini</td>
+                                            <td>models/gemini-1.5-pro</td>
+                                            <td>High-capacity, complex reasoning</td>
+                                        </tr>
+                                        <tr>
+                                            <td>groq</td>
+                                            <td>llama3-8b-8192</td>
+                                            <td>Fast Llama 3 8B on LPU</td>
+                                        </tr>
+                                        <tr>
+                                            <td>groq</td>
+                                            <td>mixtral-8x7b-32768</td>
+                                            <td>High-performance mixture of experts</td>
+                                        </tr>
+                                        <tr>
+                                            <td>mistral</td>
+                                            <td>open-mistral-7b</td>
+                                            <td>General purpose Mistral model</td>
+                                        </tr>
+                                        <tr>
+                                            <td>openrouter</td>
+                                            <td>meta-llama/llama-3-8b-instruct:free</td>
+                                            <td>Free Llama 3 instruct model</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="api-note">
+                                <strong>💡 Tip:</strong> If your selected model/provider fails, the API automatically tries fallback models from the priority queue until one succeeds.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Game Search Endpoints -->
+                    <div class="api-section" id="apiGamesSection">
+                        <div class="api-section-header" onclick="toggleApiSection('apiGamesSection')">
+                            <div class="api-section-title">
+                                <i class="fa-solid fa-gamepad"></i>
+                                Game Search API
+                            </div>
+                            <div class="api-section-toggle">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="api-section-content">
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-info-circle"></i> Overview</div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Search for games, get autocomplete suggestions, and fetch detailed game information including ratings, platforms, developers, and play statistics.</p>
+                            </div>
+
+                            <!-- Game Search List -->
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-search"></i> Search Games</div>
+                                <div class="api-endpoint">
+                                    <div class="api-method get">GET</div>
+                                    <div class="api-path">/api/scrap/games/list</div>
+                                </div>
+                                <table class="api-params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>query</td>
+                                            <td>string</td>
+                                            <td>Game title to search for (URL encoded)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="api-code-block">fetch('/api/scrap/games/list?query=Elden Ring')
+  .then(res => res.json())
+  .then(data => {
+    console.log(data.data); // Array of games
+    // [{ name, img, year, type, url }, ...]
+  })</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('fetch(\'/api/scrap/games/list?query=Elden Ring\')\n  .then(res => res.json())\n  .then(data => console.log(data.data))')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <!-- Game Autocomplete -->
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-lightbulb"></i> Autocomplete Suggestions</div>
+                                <div class="api-endpoint">
+                                    <div class="api-method get">GET</div>
+                                    <div class="api-path">/api/scrap/games/autocomplete</div>
+                                </div>
+                                <table class="api-params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>query</td>
+                                            <td>string</td>
+                                            <td>Partial game name (min 2 chars)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="api-code-block">fetch('/api/scrap/games/autocomplete?query=El')
+  .then(res => res.json())
+  .then(data => console.log(data.html))
+  // Returns HTML with autocomplete items</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('fetch(\'/api/scrap/games/autocomplete?query=El\')\n  .then(res => res.json())\n  .then(data => console.log(data.html))')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <!-- Game Details -->
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-file"></i> Game Details</div>
+                                <div class="api-endpoint">
+                                    <div class="api-method get">GET</div>
+                                    <div class="api-path">/api/scrap/games/details</div>
+                                </div>
+                                <table class="api-params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>url</td>
+                                            <td>string</td>
+                                            <td>Game URL from search results (URL encoded)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="api-code-block">fetch('/api/scrap/games/details?url=/games/elden-ring')
+  .then(res => res.json())
+  .then(data => {
+    const game = data.data;
+    // { title, coverImage, rating, developers, 
+    //   publishers, platforms, genres, playTimes, ... }
+  })</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('fetch(\'/api/scrap/games/details?url=/games/elden-ring\')\n  .then(res => res.json())\n  .then(data => console.log(data.data))')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <div class="api-note">
+                                <strong>📍 Source:</strong> Data is scraped from backloggd.com, a gaming tracking platform with ratings and statistics.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Web Scraper Endpoints -->
+                    <div class="api-section" id="apiScraperSection">
+                        <div class="api-section-header" onclick="toggleApiSection('apiScraperSection')">
+                            <div class="api-section-title">
+                                <i class="fa-solid fa-globe"></i>
+                                Web Scraper API
+                            </div>
+                            <div class="api-section-toggle">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="api-section-content">
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-info-circle"></i> Overview</div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Fetch HTML source code from any website. Useful for web scraping, data extraction, and inspecting page structure with proper User-Agent spoofing to bypass some restrictions.</p>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-link"></i> Endpoint</div>
+                                <div class="api-endpoint">
+                                    <div class="api-method get">GET</div>
+                                    <div class="api-path">/api/scrap/fetch</div>
+                                </div>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-cube"></i> Request Parameters</div>
+                                <table class="api-params-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>url</td>
+                                            <td>string</td>
+                                            <td>✓</td>
+                                            <td>Full URL to fetch (must include https://)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-code"></i> Request Example</div>
+                                <div class="api-code-block">fetch('/api/scrap/fetch?url=https://example.com')
+  .then(res => res.text())
+  .then(html => {
+    console.log(html); // Complete HTML source
+    // Parse with DOMParser or use with libraries
+  })</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('fetch(\'/api/scrap/fetch?url=https://example.com\')\n  .then(res => res.text())\n  .then(html => console.log(html))')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-arrow-right"></i> Response</div>
+                                <p style="color: var(--text-muted); font-size: 0.9rem;">Returns the complete HTML source code as plain text. Parse with DOMParser or extract data using libraries like Cheerio (Node.js) or BeautifulSoup (Python).</p>
+                            </div>
+
+                            <div class="api-note">
+                                <strong>⚠️ Note:</strong> May fail on sites with strong anti-bot protections (Cloudflare, etc.). Respects robots.txt and standard web scraping etiquette.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Integration Tips -->
+                    <div class="api-section" id="apiTipsSection">
+                        <div class="api-section-header" onclick="toggleApiSection('apiTipsSection')">
+                            <div class="api-section-title">
+                                <i class="fa-solid fa-rocket"></i>
+                                Integration Tips & Examples
+                            </div>
+                            <div class="api-section-toggle">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="api-section-content">
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-python"></i> Python Example</div>
+                                <div class="api-code-block">import requests
+
+# Chat API
+response = requests.post(
+    'https://chat-api-azure.vercel.app/api/models/reply',
+    json={
+        'provider': 'gemini',
+        'text': 'Hello, how are you?',
+        'model': 'gemini-1.5-flash'
+    }
+)
+print(response.json()['response'])
+
+# Game Search
+games = requests.get(
+    'https://chat-api-azure.vercel.app/api/scrap/games/list',
+    params={'query': 'Elden Ring'}
+).json()['data']</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('import requests\n\n# Chat API\nresponse = requests.post(\n    \'https://chat-api-azure.vercel.app/api/models/reply\',\n    json={\n        \'provider\': \'gemini\',\n        \'text\': \'Hello, how are you?\',\n        \'model\': \'gemini-1.5-flash\'\n    }\n)\nprint(response.json()[\'response\'])\n\n# Game Search\ngames = requests.get(\n    \'https://chat-api-azure.vercel.app/api/scrap/games/list\',\n    params={\'query\': \'Elden Ring\'}\n).json()[\'data\']')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-node"></i> Node.js Example</div>
+                                <div class="api-code-block">const BASE_URL = 'https://chat-api-azure.vercel.app';
+
+// Chat API
+const chatResponse = await fetch(`${BASE_URL}/api/models/reply`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    provider: 'groq',
+    text: 'Write a hello world in JS',
+    model: 'llama3-8b-8192'
+  })
+});
+const data = await chatResponse.json();
+console.log(data.response);
+
+// Game Details
+const gameDetail = await fetch(
+  `${BASE_URL}/api/scrap/games/details?url=/games/elden-ring`
+).then(r => r.json());</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('const BASE_URL = \'https://chat-api-azure.vercel.app\';\n\n// Chat API\nconst chatResponse = await fetch(`${BASE_URL}/api/models/reply`, {\n  method: \'POST\',\n  headers: { \'Content-Type\': \'application/json\' },\n  body: JSON.stringify({\n    provider: \'groq\',\n    text: \'Write a hello world in JS\',\n    model: \'llama3-8b-8192\'\n  })\n});\nconst data = await chatResponse.json();\nconsole.log(data.response);\n\n// Game Details\nconst gameDetail = await fetch(\n  `${BASE_URL}/api/scrap/games/details?url=/games/elden-ring`\n).then(r => r.json());')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <div class="api-detail-group">
+                                <div class="api-detail-label"><i class="fa-solid fa-circle-info"></i> Error Handling</div>
+                                <div class="api-code-block">// Check for errors in response
+fetch('/api/models/reply', {
+  method: 'POST',
+  body: JSON.stringify({ provider, text, model })
+})
+.then(res => {
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+})
+.then(data => {
+  if (data.error) {
+    console.error('API Error:', data.error);
+    // Check data.attempts for fallback info
+    if (data.attempts) {
+      data.attempts.forEach(a => 
+        console.log(`Failed: ${a.provider} - ${a.error}`)
+      );
+    }
+  } else {
+    console.log(data.response);
+  }
+})
+.catch(err => console.error('Network error:', err));</div>
+                                <button class="api-copy-btn" onclick="copyToClipboard('// Check for errors in response\nfetch(\'/api/models/reply\', {\n  method: \'POST\',\n  body: JSON.stringify({ provider, text, model })\n})\n.then(res => {\n  if (!res.ok) throw new Error(`HTTP ${res.status}`);\n  return res.json();\n})\n.then(data => {\n  if (data.error) {\n    console.error(\'API Error:\', data.error);\n    // Check data.attempts for fallback info\n    if (data.attempts) {\n      data.attempts.forEach(a => \n        console.log(`Failed: ${a.provider} - ${a.error}`)\n      );\n    }\n  } else {\n    console.log(data.response);\n  }\n})\n.catch(err => console.error(\'Network error:\', err));')">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -824,7 +2031,11 @@
     </div>
 
     <script>
-        // DOM Elements
+        // ========================
+        // GLOBAL STATE & DOM ELEMENTS
+        // ========================
+
+        // Chat-related DOMs
         const providerSelect = document.getElementById("providerSelect");
         const modelsList = document.getElementById("modelsList");
         const chatMessages = document.getElementById("chatMessages");
@@ -833,7 +2044,22 @@
         const clearChatBtn = document.getElementById("clearChatBtn");
         const emptyState = document.getElementById("emptyState");
         const mobileTitle = document.getElementById("mobileTitle");
-        
+
+        // Games-related DOMs
+        const gameSearchInput = document.getElementById("gameSearchInput");
+        const gameSearchMainInput = document.getElementById("gameSearchMainInput");
+        const gameSearchBtn = document.getElementById("gameSearchBtn");
+        const gamesResultsContainer = document.getElementById("gamesResultsContainer");
+        const gameDetailsContainer = document.getElementById("gameDetailsContainer");
+        const autocompleteDropdown = document.getElementById("autocompleteDropdown");
+
+        // Scraper-related DOMs
+        const scraperInput = document.getElementById("scraperInput");
+        const scraperMainInput = document.getElementById("scraperMainInput");
+        const scraperFetchBtn = document.getElementById("scraperFetchBtn");
+        const scraperOutput = document.getElementById("scraperOutput");
+        const scraperCopyBtn = document.getElementById("scraperCopyBtn");
+
         // Mobile sidebar drawer DOMs
         const sidebar = document.getElementById("sidebar");
         const menuBtn = document.getElementById("menuBtn");
@@ -848,6 +2074,8 @@
         let activeModelId = "";
         let conversationHistory = [];
         let isFetchingModels = false;
+        let currentTab = "chat";
+        let gameAutoCompleteTimeout;
 
         // Static fallback models in case server fetches fail
         const fallbackModels = {
@@ -870,50 +2098,124 @@
             ]
         };
 
-        // Initialize App
+        // ========================
+        // TAB SWITCHING
+        // ========================
+
+        window.switchTab = function(tabName, button) {
+            currentTab = tabName;
+
+            // Update active button
+            document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+
+            // Hide all tab contents
+            document.getElementById('chat-content').style.display = 'none';
+            document.getElementById('games-content').style.display = 'none';
+            document.getElementById('scraper-content').style.display = 'none';
+            document.getElementById('docs-content').style.display = 'none';
+
+            // Show selected tab content
+            document.getElementById(tabName + '-content').style.display = 'flex';
+
+            // Update mobile header title
+            const titles = {
+                'chat': 'AI Chat',
+                'games': 'Game Search',
+                'scraper': 'Web Scraper',
+                'docs': 'API Docs'
+            };
+            mobileTitle.textContent = titles[tabName] || 'AI APIs Center';
+
+            // Close mobile sidebar
+            if (window.innerWidth <= 768) {
+                toggleMobileSidebar();
+            }
+        };
+
+        // ========================
+        // INITIALIZE APP
+        // ========================
+
         window.addEventListener("DOMContentLoaded", () => {
             loadModelsForProvider(providerSelect.value);
             adjustTextareaHeight();
+            setupEventListeners();
         });
 
-        // Trigger loading models when provider is changed
-        providerSelect.addEventListener("change", () => {
-            loadModelsForProvider(providerSelect.value);
-        });
+        function setupEventListeners() {
+            // Chat events
+            providerSelect.addEventListener("change", () => {
+                loadModelsForProvider(providerSelect.value);
+            });
 
-        // Trigger message sending on enter key, unless shift key is pressed
-        chatInput.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
+            chatInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
 
-        chatInput.addEventListener("input", () => {
-            adjustTextareaHeight();
-            sendBtn.disabled = chatInput.value.trim() === "";
-        });
+            chatInput.addEventListener("input", () => {
+                adjustTextareaHeight();
+                sendBtn.disabled = chatInput.value.trim() === "";
+            });
 
-        sendBtn.addEventListener("click", sendMessage);
-        clearChatBtn.addEventListener("click", clearConversation);
+            sendBtn.addEventListener("click", sendMessage);
+            clearChatBtn.addEventListener("click", clearConversation);
 
-        // Sidebar mobile toggles
-        menuBtn.addEventListener("click", toggleMobileSidebar);
-        sidebarOverlay.addEventListener("click", toggleMobileSidebar);
-        closeSidebarBtn.addEventListener("click", toggleMobileSidebar);
+            // Games events
+            gameSearchInput.addEventListener("input", handleGameAutocomplete);
+            gameSearchMainInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    searchGames();
+                }
+            });
+            gameSearchBtn.addEventListener("click", searchGames);
+
+            // Scraper events
+            scraperInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    fetchWebContent();
+                }
+            });
+            scraperMainInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    fetchWebContent();
+                }
+            });
+            scraperFetchBtn.addEventListener("click", fetchWebContent);
+            scraperCopyBtn.addEventListener("click", copyScraperOutput);
+
+            // Sidebar mobile toggles
+            menuBtn.addEventListener("click", toggleMobileSidebar);
+            sidebarOverlay.addEventListener("click", toggleMobileSidebar);
+            closeSidebarBtn.addEventListener("click", toggleMobileSidebar);
+
+            // Close autocomplete when clicking outside
+            document.addEventListener("click", (e) => {
+                if (!e.target.closest('#gameSearchInput')) {
+                    autocompleteDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // ========================
+        // CHAT FUNCTIONS
+        // ========================
 
         function toggleMobileSidebar() {
             sidebar.classList.toggle("active");
             sidebarOverlay.classList.toggle("active");
         }
 
-        // Adjust input height automatically based on typed lines
         function adjustTextareaHeight() {
             chatInput.style.height = "auto";
             chatInput.style.height = (chatInput.scrollHeight) + "px";
         }
 
-        // Fill user input from quick suggestions
         window.fillPrompt = function(promptText) {
             chatInput.value = promptText;
             adjustTextareaHeight();
@@ -921,7 +2223,6 @@
             chatInput.focus();
         };
 
-        // Copy text helper
         window.copyMessageText = function(btn, textToCopy) {
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast("Copied to clipboard!");
@@ -951,13 +2252,11 @@
             }, 3000);
         }
 
-        // Clear chat history
         function clearConversation() {
             if (conversationHistory.length === 0) return;
             
             if (confirm("Are you sure you want to clear the conversation?")) {
                 conversationHistory = [];
-                // Reset chat box back to empty state
                 chatMessages.innerHTML = "";
                 chatMessages.appendChild(emptyState);
                 emptyState.style.display = "flex";
@@ -965,11 +2264,9 @@
             }
         }
 
-        // Select a model card
         window.selectModel = function(modelId, modelName) {
             activeModelId = modelId;
             
-            // Mark correct item in list active
             const items = modelsList.querySelectorAll(".model-item");
             items.forEach(item => {
                 if (item.getAttribute("data-id") === modelId) {
@@ -979,17 +2276,14 @@
                 }
             });
 
-            // Update header / titles
             mobileTitle.textContent = modelName;
             showToast(`Active model: ${modelName}`);
 
-            // Close sidebar automatically on mobile after model choice
             if (window.innerWidth <= 768) {
                 toggleMobileSidebar();
             }
         };
 
-        // Render Shimmer state
         function renderShimmer() {
             modelsList.innerHTML = `
                 <div class="shimmer-list">
@@ -1009,7 +2303,6 @@
             `;
         }
 
-        // Populate dynamic lists
         function populateModelList(models) {
             if (models.length === 0) {
                 modelsList.innerHTML = `<li style="padding: 16px; font-size: 0.8rem; color: var(--text-muted); text-align: center;">No models returned</li>`;
@@ -1026,11 +2319,9 @@
                 </li>
             `).join("");
 
-            // Default to selecting first model in list
             selectModel(models[0].id, models[0].name);
         }
 
-        // Load models for provider (Proxy + Fallbacks)
         async function loadModelsForProvider(provider) {
             renderShimmer();
             isFetchingModels = true;
@@ -1089,7 +2380,6 @@
             }
         }
 
-        // Send chat message
         async function sendMessage() {
             const text = chatInput.value.trim();
             if (!text || isFetchingModels) return;
@@ -1097,28 +2387,21 @@
             const provider = providerSelect.value;
             const model = activeModelId;
 
-            // Clear input field immediately
             chatInput.value = "";
             adjustTextareaHeight();
             sendBtn.disabled = true;
 
-            // Remove empty state visual if it's the first message
             if (conversationHistory.length === 0) {
                 emptyState.style.display = "none";
             }
 
-            // Append User Message to UI
             appendMessage("User", text, false);
-            
-            // Push message to local history
             conversationHistory.push({ role: "user", text: text });
 
-            // Create typing indicator
             const typingIndicator = appendTypingIndicator();
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                // API Request
                 const response = await fetch("/api/models/reply", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -1126,8 +2409,6 @@
                 });
 
                 const data = await response.json();
-                
-                // Remove typing indicator bubble
                 typingIndicator.remove();
 
                 if (!response.ok) {
@@ -1141,7 +2422,6 @@
 
                 const responseText = data.response || "No response content received.";
                 
-                // Determine the sender name to show
                 let senderName = mobileTitle.textContent;
                 if (data.fallbackUsed && data.modelName) {
                     senderName = `${data.modelName} (Fallback)`;
@@ -1150,10 +2430,7 @@
                     senderName = data.modelName;
                 }
                 
-                // Append AI response message to UI
                 appendMessage(senderName, responseText, true);
-                
-                // Push response to local history
                 conversationHistory.push({ role: "ai", text: responseText });
 
             } catch (error) {
@@ -1163,11 +2440,9 @@
                 showToast("Generation failed", false);
             }
 
-            // Scroll chat down
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Helper to append message bubbles to Chat log
         function appendMessage(sender, text, isAi = true) {
             const messageDiv = document.createElement("div");
             messageDiv.className = `message ${isAi ? 'ai' : 'user'}`;
@@ -1179,11 +2454,9 @@
             const contentDiv = document.createElement("div");
             contentDiv.className = "message-content";
             
-            // Parse markdown using marked.js if it is AI
             if (isAi && window.marked) {
                 contentDiv.innerHTML = marked.parse(text);
             } else {
-                // Simple escaping for user text
                 const textNode = document.createTextNode(text);
                 const p = document.createElement("p");
                 p.appendChild(textNode);
@@ -1193,7 +2466,6 @@
             messageDiv.appendChild(labelDiv);
             messageDiv.appendChild(contentDiv);
 
-            // Add actions for copy button
             if (isAi) {
                 const actionsDiv = document.createElement("div");
                 actionsDiv.className = "message-actions";
@@ -1210,7 +2482,6 @@
             chatMessages.appendChild(messageDiv);
         }
 
-        // Helper to append typing indicators
         function appendTypingIndicator() {
             const messageDiv = document.createElement("div");
             messageDiv.className = "message ai";
@@ -1232,6 +2503,284 @@
             chatMessages.appendChild(messageDiv);
             return messageDiv;
         }
+
+        // ========================
+        // GAME SEARCH FUNCTIONS
+        // ========================
+
+        async function handleGameAutocomplete(e) {
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                autocompleteDropdown.classList.remove('show');
+                return;
+            }
+
+            clearTimeout(gameAutoCompleteTimeout);
+            gameAutoCompleteTimeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(`/api/scrap/games/autocomplete?query=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'success' && data.html) {
+                        autocompleteDropdown.innerHTML = data.html;
+                        autocompleteDropdown.classList.add('show');
+
+                        // Add click listeners to autocomplete items
+                        document.querySelectorAll('.autocomplete-item').forEach(item => {
+                            item.addEventListener('click', () => {
+                                const gameSlug = item.getAttribute('data-slug');
+                                gameSearchInput.value = item.textContent;
+                                autocompleteDropdown.classList.remove('show');
+                                // You could auto-select and show details here
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error('Autocomplete error:', error);
+                    showToast('Autocomplete failed', false);
+                }
+            }, 300);
+        }
+
+        async function searchGames() {
+            const query = gameSearchMainInput.value.trim() || gameSearchInput.value.trim();
+            
+            if (!query) {
+                showToast('Please enter a game name', false);
+                return;
+            }
+
+            gameSearchBtn.disabled = true;
+            gamesResultsContainer.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div><p style="margin-top: 16px; color: var(--text-muted);">Searching...</p></div>';
+            gameDetailsContainer.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/scrap/games/list?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.status === 'success' && data.data.length > 0) {
+                    displayGameResults(data.data);
+                } else {
+                    gamesResultsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><i class="fa-solid fa-gamepad" style="font-size: 2rem; margin-bottom: 16px; opacity: 0.5; display: block;"></i>No games found</div>';
+                }
+            } catch (error) {
+                console.error('Game search error:', error);
+                gamesResultsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);">Search failed. Please try again.</div>';
+                showToast('Game search failed', false);
+            } finally {
+                gameSearchBtn.disabled = false;
+            }
+        }
+
+        function displayGameResults(games) {
+            const grid = document.createElement('div');
+            grid.className = 'games-grid';
+            
+            games.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.onclick = () => showGameDetails(game.url);
+                
+                card.innerHTML = `
+                    <div class="game-card-image">
+                        ${game.img ? `<img src="${game.img}" alt="${game.name}">` : '<i class="fa-solid fa-image" style="font-size: 2rem; color: var(--border-color);"></i>'}
+                    </div>
+                    <div class="game-card-content">
+                        <div class="game-card-title">${game.name}</div>
+                        <div class="game-card-meta">
+                            <span>${game.year || 'N/A'}</span>
+                            <span class="game-card-type">${game.type}</span>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+
+            gamesResultsContainer.innerHTML = '';
+            gamesResultsContainer.appendChild(grid);
+        }
+
+        async function showGameDetails(gameUrl) {
+            gameDetailsContainer.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading-spinner"></div><p style="margin-top: 16px; color: var(--text-muted);">Loading details...</p></div>';
+            gameDetailsContainer.style.display = 'block';
+
+            try {
+                const response = await fetch(`/api/scrap/games/details?url=${encodeURIComponent(gameUrl)}`);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    displayGameDetailsUI(data.data);
+                } else {
+                    gameDetailsContainer.innerHTML = '<div style="padding: 24px; color: var(--text-muted);">Failed to load game details</div>';
+                }
+            } catch (error) {
+                console.error('Game details error:', error);
+                gameDetailsContainer.innerHTML = '<div style="padding: 24px; color: var(--text-muted);">Error loading details</div>';
+                showToast('Failed to load game details', false);
+            }
+        }
+
+        function displayGameDetailsUI(details) {
+            const html = `
+                <button class="back-btn" onclick="hideGameDetails()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Results
+                </button>
+
+                <div class="game-details">
+                    <div class="game-details-header">
+                        ${details.coverImage ? `
+                            <div class="game-details-image">
+                                <img src="${details.coverImage}" alt="${details.title}">
+                            </div>
+                        ` : ''}
+                        <div class="game-details-info">
+                            <h1 class="game-details-title">${details.title}</h1>
+                            ${details.releaseDate ? `<div class="game-details-year">${details.releaseDate}</div>` : ''}
+                            
+                            ${details.rating ? `
+                                <div class="game-details-rating" style="margin-bottom: 16px;">
+                                    <span class="rating-stars">${'★'.repeat(Math.round(details.rating))}</span>
+                                    <span class="rating-value">${details.rating}/5</span>
+                                </div>
+                            ` : ''}
+
+                            <div class="game-details-meta">
+                                ${details.developers.length > 0 ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Developer</span>
+                                        <span class="meta-value">${details.developers.join(', ')}</span>
+                                    </div>
+                                ` : ''}
+                                ${details.publishers.length > 0 ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Publisher</span>
+                                        <span class="meta-value">${details.publishers.join(', ')}</span>
+                                    </div>
+                                ` : ''}
+                                ${details.stats.plays ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Plays</span>
+                                        <span class="meta-value">${details.stats.plays}</span>
+                                    </div>
+                                ` : ''}
+                                ${details.stats.playing ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Currently Playing</span>
+                                        <span class="meta-value">${details.stats.playing}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            ${details.genres.length > 0 ? `
+                                <div class="game-details-tags">
+                                    ${details.genres.map(g => `<span class="tag">${g}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    ${details.platforms.length > 0 ? `
+                        <div class="game-details-description">
+                            <h3>Platforms</h3>
+                            <p>${details.platforms.join(', ')}</p>
+                        </div>
+                    ` : ''}
+
+                    ${details.playTimes.average ? `
+                        <div class="game-details-description">
+                            <h3>Play Times</h3>
+                            <p>
+                                ${details.playTimes.average ? `Average: ${details.playTimes.average}` : ''}
+                                ${details.playTimes.toFinish ? ` | To Finish: ${details.playTimes.toFinish}` : ''}
+                                ${details.playTimes.toMaster ? ` | To Master: ${details.playTimes.toMaster}` : ''}
+                            </p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            gameDetailsContainer.innerHTML = html;
+        }
+
+        window.hideGameDetails = function() {
+            gameDetailsContainer.style.display = 'none';
+        };
+
+        // ========================
+        // WEB SCRAPER FUNCTIONS
+        // ========================
+
+        async function fetchWebContent() {
+            const url = scraperMainInput.value.trim() || scraperInput.value.trim();
+            
+            if (!url) {
+                showToast('Please enter a URL', false);
+                return;
+            }
+
+            scraperFetchBtn.disabled = true;
+            scraperOutput.innerHTML = '<span class="loading-spinner"></span> Fetching...';
+            scraperOutput.classList.add('show');
+            scraperCopyBtn.style.display = 'none';
+
+            try {
+                const response = await fetch(`/api/scrap/fetch?url=${encodeURIComponent(url)}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Server returned status ${response.status}`);
+                }
+
+                const htmlContent = await response.text();
+                
+                // Pretty print HTML
+                const prettyHtml = htmlContent
+                    .replace(/</g, '\n<')
+                    .replace(/>/g, '>\n')
+                    .split('\n')
+                    .filter(line => line.trim())
+                    .join('\n');
+
+                scraperOutput.textContent = prettyHtml;
+                scraperCopyBtn.style.display = 'flex';
+                showToast('Content fetched successfully!', true);
+            } catch (error) {
+                console.error('Scraper error:', error);
+                scraperOutput.textContent = `Error: ${error.message}`;
+                showToast('Failed to fetch content', false);
+            } finally {
+                scraperFetchBtn.disabled = false;
+            }
+        }
+
+        function copyScraperOutput() {
+            navigator.clipboard.writeText(scraperOutput.textContent).then(() => {
+                showToast('HTML copied to clipboard!', true);
+            }).catch(() => {
+                showToast('Copy failed', false);
+            });
+        }
+
+        // ========================
+        // API DOCUMENTATION FUNCTIONS
+        // ========================
+
+        window.toggleApiSection = function(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.toggle('expanded');
+            }
+        };
+
+        window.copyToClipboard = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Code copied to clipboard!', true);
+            }).catch(() => {
+                showToast('Copy failed', false);
+            });
+        };
     </script>
 </body>
 </html>
