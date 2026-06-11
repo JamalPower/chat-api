@@ -649,6 +649,10 @@
         }
 
         /* Game Results Grid */
+        #gamesResultsContainer {
+            margin-top: 8px;
+        }
+
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -663,7 +667,8 @@
 
         @media (max-width: 768px) {
             .games-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+                gap: 16px;
             }
         }
 
@@ -673,22 +678,27 @@
             border-radius: 12px;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
             display: flex;
             flex-direction: column;
             box-shadow: var(--shadow-sm);
         }
 
         .game-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
             border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .game-card-image-wrapper {
+            position: relative;
+            background: var(--bg-main);
         }
 
         .game-card-image {
+            position: relative;
             width: 100%;
             height: 180px;
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -701,18 +711,61 @@
             object-fit: cover;
         }
 
+        .game-card-badges {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .game-card-type,
+        .game-card-year {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background: white;
+            border: 1px solid var(--border-color);
+        }
+
+        .game-card-type {
+            color: var(--primary);
+            max-width: 60%;
+        }
+
+        .game-card-year {
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
         .game-card-content {
-            padding: 14px;
-            flex: 1;
+            padding: 8px 12px 10px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+        }
+
+        .game-card-title-row {
+            display: flex;
+            align-items: flex-start;
         }
 
         .game-card-title {
             font-weight: 600;
             color: var(--text-main);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            line-height: 1.35;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -725,15 +778,6 @@
             font-size: 0.75rem;
             color: var(--text-muted);
         }
-
-        .game-card-type {
-            background: var(--primary-light);
-            color: var(--primary);
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 500;
-        }
-
         /* Game Details View */
         .game-details {
             background: white;
@@ -1769,6 +1813,16 @@
                                             <td>string</td>
                                             <td>Game title to search for (URL encoded)</td>
                                         </tr>
+                                        <tr>
+                                            <td>type</td>
+                                            <td>string</td>
+                                            <td>Response type ('JSON' or 'HTML')</td>
+                                        </tr>
+                                        <tr>
+                                            <td>page</td>
+                                            <td>number</td>
+                                            <td>Page number for pagination (default 1)</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                                 <div class="api-code-block">fetch('/api/scrap/games/list?query=Elden Ring')
@@ -2556,7 +2610,7 @@ fetch('/api/models/reply', {
             gameDetailsContainer.style.display = 'none';
 
             try {
-                const response = await fetch(`/api/scrap/games/list?query=${encodeURIComponent(query)}`);
+                const response = await fetch(`/api/scrap/games/list?query=${encodeURIComponent(query)}&type=JSON&page=1`);
                 const data = await response.json();
 
                 if (data.status === 'success' && data.data.length > 0) {
@@ -2571,26 +2625,37 @@ fetch('/api/models/reply', {
             } finally {
                 gameSearchBtn.disabled = false;
             }
-        }
-
+        }        
         function displayGameResults(games) {
             const grid = document.createElement('div');
             grid.className = 'games-grid';
+            const truncateText = (text, maxLength) => {
+                if (text.length > maxLength) {
+                    return text.substring(0, maxLength) + '...';
+                }
+                return text;
+            };
             
             games.forEach(game => {
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.onclick = () => showGameDetails(game.url);
                 
+                const truncatedName = truncateText(game.name, 28);
+                
                 card.innerHTML = `
-                    <div class="game-card-image">
-                        ${game.img ? `<img src="${game.img}" alt="${game.name}">` : '<i class="fa-solid fa-image" style="font-size: 2rem; color: var(--border-color);"></i>'}
+                    <div class="game-card-image-wrapper">
+                        <div class="game-card-image">
+                            ${game.img ? `<img src="${game.img}" alt="${game.name}">` : '<i class="fa-solid fa-image" style="font-size: 2rem; color: var(--border-color);"></i>'}
+                            <div class="game-card-badges">
+                                <span class="game-card-type">${game.type}</span>
+                                <span class="game-card-year">${game.year || 'N/A'}</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="game-card-content">
-                        <div class="game-card-title">${game.name}</div>
-                        <div class="game-card-meta">
-                            <span>${game.year || 'N/A'}</span>
-                            <span class="game-card-type">${game.type}</span>
+                        <div class="game-card-title-row">
+                            <div class="game-card-title">${truncatedName}</div>
                         </div>
                     </div>
                 `;

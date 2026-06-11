@@ -4,9 +4,9 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const crypto = require('crypto');
 const https = require('https');
+const match = require("./ScrapClasses/match");
 
 const app = express();
-
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(express.static(__dirname));
@@ -422,8 +422,8 @@ app.get("/api/scrap/games/autocomplete", async (req, res) => {
 
 //===============================================//
 //=================GET GAME PICTURE=================//
-async function fetchGames(query) {
-     const targetUrl = `https://backloggd.com${query}`;
+async function fetchHTML(url) {
+     const targetUrl =url;
     const agent = new https.Agent({
         ciphers: [
             'TLS_AES_256_GCM_SHA384',
@@ -462,14 +462,16 @@ async function fetchGames(query) {
     }
 }
 app.get("/api/scrap/games/list", async (req, res) => {
-    const {query} = req.query;
+    const {query, type} = req.query;
+    const page = req.query.page || 1;
     var data = [];
-    if (!query) {
-        return res.status(400).json({ error: "Missing required query parameter: query" });
+    if (!query && !type && (type === 'JSON' || type === 'HTML')) {
+        console.error("Missing required query parameters");
+        return res.status(400).json({ error: "Missing required query parameter" });
     }
 
   try {
-        const response = await fetchGames(`/search/results.turbo_stream?page=1&query=${query.replace(/ /g, "+")}&type=games`);
+        const response = await fetchHTML(`https://backloggd.com/search/results.turbo_stream?page=${page}&query=${query.replace(/ /g, "+")}&type=games`);
         const $ = cheerio.load(response);
         const games = [];
         $('div.result').each((index, element) => {
@@ -490,18 +492,20 @@ app.get("/api/scrap/games/list", async (req, res) => {
                 });
             }
         });
-        res.json({ 
-            status: "success", 
-            count: games.length, 
-            data: games
-        });
-
+        if (type === 'JSON') {
+            res.json({ 
+                status: "success", 
+                count: games.length, 
+                data: games
+            });
+        } else {
+            // HTML response for games results
+        }
     } catch (error) {
         console.error("Parsing Error:", error);
         res.status(500).json({ status: "error", message: error.message });
     }
 });
-
 app.get("/api/scrap/games/details", async (req, res) => {
     const {url} = req.query;
     if (!url) {
@@ -509,7 +513,7 @@ app.get("/api/scrap/games/details", async (req, res) => {
     }
 
     try {
-        const response = await fetchGames(url);
+        const response = await fetchHTML(`https://backloggd.com${url}`);
         const $ = cheerio.load(response);
         const title = $('h1').first().text().trim();
         const gameImage = $('img[alt*="cover"], div.game-cover img, .game-image img').first().attr('src') || null;
@@ -641,6 +645,31 @@ app.get("/api/scrap/games/details", async (req, res) => {
     }
 });
 
+//=================SPORTS===========================//
+app.get("/api/scrap/sports", async (req, res) => {
+    const {type} = req.query;
+    const BASE_URL = 'https://one-kora.com/';
+    if (!type) {
+       return res.status(400).json({ status: "error", message: "Missing required query parameter: type" });
+    }
+    const validTypes = ['matches-today', 'matches-tomorrow', 'matches-yesterday', 'main'];
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({ status: "error", message: `Invalid type: "${type}"` });
+    }
+    try {
+        let response;
+        if (type === 'main') {
+            response = await fetchHTML(BASE_URL);
+        } else {
+            response = await fetchHTML(`${BASE_URL}${type}/`);
+        }
+        const Match = new match();
+        res.status(200).json({status:"success",type:type , data: Match.parseMatches(response)});
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({status:"error", message: error.message});
+    }
+});
 //===================================================//
 if (require.main === module) {
     app.listen(3000, () => {
