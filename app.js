@@ -296,7 +296,6 @@ app.get("/api/models/:provider", async (req, res) => {
 // ========================
 // Scraping endpoint 
 // ========================
-
 async function fetchHTMLSOURCE(url) {
     const agent = new https.Agent({
         ciphers: [
@@ -449,7 +448,7 @@ async function fetchHTML(url) {
                 'Pragma': 'no-cache',
                 'Connection': 'keep-alive'
             },
-            timeout: 10000
+            timeout: 50000
         });
 
         return response.data;
@@ -657,19 +656,71 @@ app.get("/api/scrap/sports", async (req, res) => {
       return res.status(400).json({ status: "error", message: `Invalid type: "${type}"` });
     }
     try {
-        let response;
-        if (type === 'main') {
-            response = await fetchHTML(BASE_URL);
-        } else {
-            response = await fetchHTML(`${BASE_URL}${type}/`);
-        }
         const Match = new match();
-        res.status(200).json({status:"success",type:type , data: Match.parseMatches(response)});
+        if (type === 'main') {
+           const [response1, response2, response3] = await Promise.all([
+                fetchHTML(BASE_URL),
+                fetchHTML('https://www.kooora.com/%D9%83%D8%B1%D8%A9-%D8%A7%D9%84%D9%82%D8%AF%D9%85/%D9%85%D8%A8%D8%A7%D8%B1%D9%8A%D8%A7%D8%AA-%D8%A7%D9%84%D9%8A%D9%88%D9%85'),
+                fetchHTML('https://www.kooora.com/%D9%83%D8%B1%D8%A9-%D8%A7%D9%84%D9%82%D8%AF%D9%85/%D8%AF%D9%88%D9%84%D8%A9/%D8%A7%D9%84%D9%85%D8%BA%D8%B1%D8%A8/MAR'),
+            ]);
+            res.status(200).json({
+                status:"success",
+                type:type ,
+                dataMatches: Match.parseMatches(response1),
+                dataCompetitions: Match.parseCompetitions(response2),
+                dataNews: Match.parseMatchesNewsMain(response3) 
+            });
+        } else {
+            response1 = await fetchHTML(`${BASE_URL}${type}/`);
+            res.status(200).json({
+                status:"success",
+                type:type , 
+                data: Match.parseMatches(response1)});
+        }
     } catch (error) {
-        console.log(error)
+        console.error(error)
         res.status(500).json({status:"error", message: error.message});
     }
 });
+app.get("/api/scrap/sports/news", async (req, res) => {
+ try {
+    const response = await fetchHTML(`https://www.kooora.com/كرة-القدم/دولة/المغرب/أخبار/1/MAR`);
+    const Match = new match();
+    res.status(200).json({
+        status:"success",
+        data: Match.parseMatchesNewsMain(response)
+    });
+ } catch (error) {
+    console.error(error)
+    res.status(500).json({status:"error", message: error.message});
+ }
+});
+app.get("/api/scrap/sports/news/details", async (req, res) => {
+    const url = req.query.url;
+    if (!url) {
+       return res.status(400).json({ status: "error", message: "Missing required parameter: url" });
+    }
+    try {
+        const response = await fetchHTML(url);
+        const $ = cheerio.load(response);
+        const content = [];
+        $(".fco-article-body p").each((_, el) => {
+           const $el = $(el);
+           if ($el.children().length > 0) return;
+           const text = $el.text().trim();
+           if (!text) return;
+           content.push(text);
+        });
+        res.status(200).json({
+            status:"success",
+            data: content
+        });
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({status:"error", message: error.message});
+    }
+});
+    
 //===================================================//
 if (require.main === module) {
     app.listen(3000, () => {
