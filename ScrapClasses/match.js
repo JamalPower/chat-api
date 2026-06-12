@@ -4,7 +4,23 @@ class match {
  parseMatches(html) {
    const $ = cheerio.load(html);
    const matches = [];
- 
+   function convertRiyadhToMorocco(timeStr) {
+    const trimmed = timeStr.trim();
+    const [time, period] = trimmed.split(' '); 
+    let [hours, minutes] = time.split(':').map(Number);
+    if (period === 'AM') {
+        if (hours === 12) hours = 0;   
+    } else if (period === 'PM') {
+        if (hours !== 12) hours += 12; 
+    }
+    let totalMinutes = hours * 60 + minutes - 120;
+    if (totalMinutes < 0) totalMinutes += 24 * 60;
+
+    const newHours   = Math.floor(totalMinutes / 60);
+    const newMinutes = totalMinutes % 60;
+
+    return `${String(newHours).padStart(2, '0')}:${String(newMinutes).padStart(2, '0')}`;
+ }
   $(".AY_Match").each((_, el) => {
     const $el = $(el);
     const status = $el.hasClass("finished")
@@ -34,7 +50,7 @@ class match {
     const detailsUrl = $el.find("a").first().attr("href") || "";
     matches.push({
       status,
-      time,
+      time:convertRiyadhToMorocco(time),
       stat,
       team1,
       team2,
@@ -117,7 +133,8 @@ parseMatchesNewsMain(html) {
     const tag   = $el.find("div.fco-card__tags .fco-tag-text").text().trim();
     const time  = $el.find("div.fco-card__info .fco-card__info--time").text().trim();
     const date  = $el.find("div.fco-card__info .fco-card__info--date").text().trim();
-    const url   = 'https://www.kooora.com' + $el.attr("href");
+    const href = $el.attr("href") || $el.find("a").first().attr("href") || "";
+    const url = 'https://www.kooora.com' + href;
     const img   = $el.find(".fco-image img").attr("src");
 
     news.push({
