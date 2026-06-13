@@ -2610,11 +2610,11 @@ fetch('/api/models/reply', {
             gameDetailsContainer.style.display = 'none';
 
             try {
-                const response = await fetch(`/api/scrap/games/list?query=${encodeURIComponent(query)}&type=JSON&page=1`);
-                const data = await response.json();
+                const response = await fetch(`/api/scrap/games/list?query=${encodeURIComponent(query)}&type=HTML&page=1`);
+                const html = await response.text();
 
-                if (data.status === 'success' && data.data.length > 0) {
-                    displayGameResults(data.data);
+                if (html.trim()) {
+                    displayGameResults(html);
                 } else {
                     gamesResultsContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><i class="fa-solid fa-gamepad" style="font-size: 2rem; margin-bottom: 16px; opacity: 0.5; display: block;"></i>No games found</div>';
                 }
@@ -2626,45 +2626,8 @@ fetch('/api/models/reply', {
                 gameSearchBtn.disabled = false;
             }
         }        
-        function displayGameResults(games) {
-            const grid = document.createElement('div');
-            grid.className = 'games-grid';
-            const truncateText = (text, maxLength) => {
-                if (text.length > maxLength) {
-                    return text.substring(0, maxLength) + '...';
-                }
-                return text;
-            };
-            
-            games.forEach(game => {
-                const card = document.createElement('div');
-                card.className = 'game-card';
-                card.onclick = () => showGameDetails(game.url);
-                
-                const truncatedName = truncateText(game.name, 28);
-                
-                card.innerHTML = `
-                    <div class="game-card-image-wrapper">
-                        <div class="game-card-image">
-                            ${game.img ? `<img src="${game.img}" alt="${game.name}">` : '<i class="fa-solid fa-image" style="font-size: 2rem; color: var(--border-color);"></i>'}
-                            <div class="game-card-badges">
-                                <span class="game-card-type">${game.type}</span>
-                                <span class="game-card-year">${game.year || 'N/A'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="game-card-content">
-                        <div class="game-card-title-row">
-                            <div class="game-card-title">${truncatedName}</div>
-                        </div>
-                    </div>
-                `;
-                
-                grid.appendChild(card);
-            });
-
-            gamesResultsContainer.innerHTML = '';
-            gamesResultsContainer.appendChild(grid);
+        function displayGameResults(htmlContent) {
+            gamesResultsContainer.innerHTML = htmlContent;
         }
 
         async function showGameDetails(gameUrl) {
@@ -2672,11 +2635,11 @@ fetch('/api/models/reply', {
             gameDetailsContainer.style.display = 'block';
 
             try {
-                const response = await fetch(`/api/scrap/games/details?url=${encodeURIComponent(gameUrl)}`);
-                const data = await response.json();
+                const response = await fetch(`/api/scrap/games/details?url=${encodeURIComponent(gameUrl)}&type=HTML`);
+                const html = await response.text();
 
-                if (data.status === 'success') {
-                    displayGameDetailsUI(data.data);
+                if (html.trim()) {
+                    displayGameDetailsUI(html);
                 } else {
                     gameDetailsContainer.innerHTML = '<div style="padding: 24px; color: var(--text-muted);">Failed to load game details</div>';
                 }
@@ -2687,87 +2650,8 @@ fetch('/api/models/reply', {
             }
         }
 
-        function displayGameDetailsUI(details) {
-            const html = `
-                <button class="back-btn" onclick="hideGameDetails()">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    Back to Results
-                </button>
-
-                <div class="game-details">
-                    <div class="game-details-header">
-                        ${details.coverImage ? `
-                            <div class="game-details-image">
-                                <img src="${details.coverImage}" alt="${details.title}">
-                            </div>
-                        ` : ''}
-                        <div class="game-details-info">
-                            <h1 class="game-details-title">${details.title}</h1>
-                            ${details.releaseDate ? `<div class="game-details-year">${details.releaseDate}</div>` : ''}
-                            
-                            ${details.rating ? `
-                                <div class="game-details-rating" style="margin-bottom: 16px;">
-                                    <span class="rating-stars">${'★'.repeat(Math.round(details.rating))}</span>
-                                    <span class="rating-value">${details.rating}/5</span>
-                                </div>
-                            ` : ''}
-
-                            <div class="game-details-meta">
-                                ${details.developers.length > 0 ? `
-                                    <div class="meta-item">
-                                        <span class="meta-label">Developer</span>
-                                        <span class="meta-value">${details.developers.join(', ')}</span>
-                                    </div>
-                                ` : ''}
-                                ${details.publishers.length > 0 ? `
-                                    <div class="meta-item">
-                                        <span class="meta-label">Publisher</span>
-                                        <span class="meta-value">${details.publishers.join(', ')}</span>
-                                    </div>
-                                ` : ''}
-                                ${details.stats.plays ? `
-                                    <div class="meta-item">
-                                        <span class="meta-label">Plays</span>
-                                        <span class="meta-value">${details.stats.plays}</span>
-                                    </div>
-                                ` : ''}
-                                ${details.stats.playing ? `
-                                    <div class="meta-item">
-                                        <span class="meta-label">Currently Playing</span>
-                                        <span class="meta-value">${details.stats.playing}</span>
-                                    </div>
-                                ` : ''}
-                            </div>
-
-                            ${details.genres.length > 0 ? `
-                                <div class="game-details-tags">
-                                    ${details.genres.map(g => `<span class="tag">${g}</span>`).join('')}
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-
-                    ${details.platforms.length > 0 ? `
-                        <div class="game-details-description">
-                            <h3>Platforms</h3>
-                            <p>${details.platforms.join(', ')}</p>
-                        </div>
-                    ` : ''}
-
-                    ${details.playTimes.average ? `
-                        <div class="game-details-description">
-                            <h3>Play Times</h3>
-                            <p>
-                                ${details.playTimes.average ? `Average: ${details.playTimes.average}` : ''}
-                                ${details.playTimes.toFinish ? ` | To Finish: ${details.playTimes.toFinish}` : ''}
-                                ${details.playTimes.toMaster ? ` | To Master: ${details.playTimes.toMaster}` : ''}
-                            </p>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-
-            gameDetailsContainer.innerHTML = html;
+        function displayGameDetailsUI(htmlContent) {
+            gameDetailsContainer.innerHTML = htmlContent;
         }
 
         window.hideGameDetails = function() {

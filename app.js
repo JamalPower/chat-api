@@ -498,7 +498,41 @@ app.get("/api/scrap/games/list", async (req, res) => {
                 data: games
             });
         } else {
-            // HTML response for games results
+            const truncateText = (text, maxLength) => {
+                if (text.length > maxLength) {
+                    return text.substring(0, maxLength) + '...';
+                }
+                return text;
+            };
+            
+            if (games.length === 0) {
+                res.send('');
+                return;
+            }
+
+            const cardsHtml = games.map(game => {
+                const truncatedName = truncateText(game.name, 28);
+                return `
+                    <div class="game-card" onclick="showGameDetails('${game.url}')">
+                        <div class="game-card-image-wrapper">
+                            <div class="game-card-image">
+                                ${game.img ? `<img src="${game.img}" alt="${game.name}">` : '<i class="fa-solid fa-image" style="font-size: 2rem; color: var(--border-color);"></i>'}
+                                <div class="game-card-badges">
+                                    <span class="game-card-type">${game.type}</span>
+                                    <span class="game-card-year">${game.year || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="game-card-content">
+                            <div class="game-card-title-row">
+                                <div class="game-card-title">${truncatedName}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            res.send(`<div class="games-grid">${cardsHtml}</div>`);
         }
     } catch (error) {
         console.error("Parsing Error:", error);
@@ -506,7 +540,7 @@ app.get("/api/scrap/games/list", async (req, res) => {
     }
 });
 app.get("/api/scrap/games/details", async (req, res) => {
-    const {url} = req.query;
+    const {url, type} = req.query;
     if (!url) {
         return res.status(400).json({ error: "Missing required query parameter: url" });
     }
@@ -633,10 +667,93 @@ app.get("/api/scrap/games/details", async (req, res) => {
             playTimes
         };
 
-        res.json({ 
-            status: "success", 
-            data: gameDetails
-        });
+        if (type === 'JSON') {
+            res.json({ 
+                status: "success", 
+                data: gameDetails
+            });
+        } else {
+            const hasCoverImage = gameDetails.coverImage && !gameDetails.coverImage.endsWith('undefined');
+            const html = `
+                <button class="back-btn" onclick="hideGameDetails()">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Results
+                </button>
+
+                <div class="game-details">
+                    <div class="game-details-header">
+                        ${hasCoverImage ? `
+                            <div class="game-details-image">
+                                <img src="${gameDetails.gameImage}" alt="${gameDetails.title}">
+                            </div>
+                        ` : ''}
+                        <div class="game-details-info">
+                            <h1 class="game-details-title">${gameDetails.title}</h1>
+                            ${gameDetails.releaseDate ? `<div class="game-details-year">${gameDetails.releaseDate}</div>` : ''}
+                            
+                            ${gameDetails.rating ? `
+                                <div class="game-details-rating" style="margin-bottom: 16px;">
+                                    <span class="rating-stars">${'★'.repeat(Math.round(gameDetails.rating))}</span>
+                                    <span class="rating-value">${gameDetails.rating}/5</span>
+                                </div>
+                            ` : ''}
+
+                            <div class="game-details-meta">
+                                ${gameDetails.developers.length > 0 ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Developer</span>
+                                        <span class="meta-value">${gameDetails.developers.join(', ')}</span>
+                                    </div>
+                                ` : ''}
+                                ${gameDetails.publishers.length > 0 ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Publisher</span>
+                                        <span class="meta-value">${gameDetails.publishers.join(', ')}</span>
+                                    </div>
+                                ` : ''}
+                                ${gameDetails.stats.plays ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Plays</span>
+                                        <span class="meta-value">${gameDetails.stats.plays}</span>
+                                    </div>
+                                ` : ''}
+                                ${gameDetails.stats.playing ? `
+                                    <div class="meta-item">
+                                        <span class="meta-label">Currently Playing</span>
+                                        <span class="meta-value">${gameDetails.stats.playing}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            ${gameDetails.genres.length > 0 ? `
+                                <div class="game-details-tags">
+                                    ${gameDetails.genres.map(g => `<span class="tag">${g}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    ${gameDetails.platforms.length > 0 ? `
+                        <div class="game-details-description">
+                            <h3>Platforms</h3>
+                            <p>${gameDetails.platforms.join(', ')}</p>
+                        </div>
+                    ` : ''}
+
+                    ${gameDetails.playTimes.average ? `
+                        <div class="game-details-description">
+                            <h3>Play Times</h3>
+                            <p>
+                                ${gameDetails.playTimes.average ? `Average: ${gameDetails.playTimes.average}` : ''}
+                                ${gameDetails.playTimes.toFinish ? ` | To Finish: ${gameDetails.playTimes.toFinish}` : ''}
+                                ${gameDetails.playTimes.toMaster ? ` | To Master: ${gameDetails.playTimes.toMaster}` : ''}
+                            </p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            res.send(html);
+        }
 
     } catch (error) {
         console.error("Parsing Error:", error);
