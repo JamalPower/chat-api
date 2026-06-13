@@ -733,6 +733,11 @@ app.get("/api/scrap/games/details", async (req, res) => {
                         </div>
                     </div>
 
+                    <div class="game-details-description">
+                         <h3>Game Description</h3>
+                         <p>${gameDetails.description}</p>
+                    </div>
+
                     ${gameDetails.platforms.length > 0 ? `
                         <div class="game-details-description">
                             <h3>Platforms</h3>
